@@ -1,5 +1,6 @@
 import requests
 from pprint import pprint
+import datetime
 
 
 def intelligent_superhero(url_api):
@@ -45,6 +46,21 @@ class YaUploader:
             print('Success!')
 
 
+def questions_for_two_days(url_api, tagged):
+    # получаем данные за 2 предыдущих дня
+    delta_day = datetime.timedelta(2)
+    today = datetime.datetime.now()
+    day_before_yesterday = today - delta_day
+    todate = str(int(today.timestamp()))
+    fromdate = str(int(day_before_yesterday.timestamp()))
+
+    headers = {'Content-Type': 'application/json'}
+    params = {"fromdate": fromdate, "todate": todate, "order": "asc",
+              "sort": "activity", "tagged": tagged, "site": "stackoverflow"}
+    response_api = requests.get(url_api, headers=headers, params=params)
+    pprint(response_api.json())
+
+
 if __name__ == '__main__':
 
     # task 1
@@ -63,3 +79,8 @@ if __name__ == '__main__':
     TOKEN = ''
     uploader = YaUploader(TOKEN)
     uploader.upload("/result.txt", file_local)
+
+    # task 3
+    url_api = 'https://api.stackexchange.com/2.3/questions'
+    tag_api = 'Python'
+    questions_for_two_days(url_api, tag_api)
